@@ -1,0 +1,37 @@
+{% extends "base.html" %} {% block content %}
+<header class="wf mb3">
+  <h1 class="tc mt5">
+    <!--
+            id="random-link"
+            title="take me somewhere random"
+            target="_blank"
+            onclick="getRandomLink()" 
+            -->
+    <a href="/" class="cl-near-black"><h4>bliotti</h4></a>
+  </h1>
+
+  <div class="flex flex-row j-center">
+    <div class="sw5">
+      <a href="https://github.com/bliotti">
+        <img src="/images/github.svg" title="my repo" />
+      </a>
+    </div>
+
+    <div class="sw5">
+      <a href="/KEY.txt"><img src="/images/key.svg" title="PGP key" /></a>
+    </div>
+
+    <div class="sw5">
+      <a href="mailto:bliotti@protonmail.com">
+        <img src="/images/email.svg" title="mail" />
+      </a>
+    </div>
+
+    <div class="sw5">
+      <a href="https://t.me/coinguybri">
+        <img src="/images/telegram.png" title="please don't spam me" />
+      </a>
+    </div>
+  </div>
+</header>
+{% include "navbar.html" %} {{ section.content | safe }} {% endblock content %}

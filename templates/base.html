@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="bliotti" />
+    <meta name="description" content="just a random site on the interweb" />
+    <!-- <meta name="lightning" content="lnurlp:raphjaph@lntxbot.com" /> -->
+    <meta property="og:image" content="/favicon.png" />
+    <title>bliotti</title>
+    <link rel="icon" href="/images/favicon.png" type="image/png" />
+    <link href="/font/inter-ui.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/gry.min.css" />
+    <style>
+      body {
+        background-color: #f5f5f5;
+      }
+
+      .container {
+        max-width: 700px;
+      }
+    </style>
+  </head>
+
+  <body class="flex a-items-center flex-column pa3 fw-n">
+    <article class="container wf">
+      {% block content %}{% endblock content %} {% include "footer.html" %}
+    </article>
+  </body>
+</html>
+
+<script>
+  function getRandomLink() {
+    fetch("https://coinguy.io/bookmarks.txt")
+      .then((r) => r.text())
+      .then(function (text) {
+        var lines = text.split("\n");
+        var randLineNum = Math.floor(Math.random() * lines.length);
+        var link = lines[randLineNum];
+        document.querySelectorAll("#random-link").forEach((element) => {
+          element.setAttribute("href", link);
+        });
+      });
+  }
+  getRandomLink();
+</script>
