@@ -1,3 +1,3 @@
 # My Website
 
-copied from github.com/raphjaph/website
+### a fork of github.com/raphjaph/website
