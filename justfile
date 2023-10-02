@@ -4,4 +4,4 @@ fmt:
   prettier --write .
 
 serve:
-  env=`git rev-parse HEAD` zola serve
+  GIT_SHA=`git rev-parse HEAD` env=dev zola serve

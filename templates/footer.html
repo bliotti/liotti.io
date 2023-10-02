@@ -1,18 +1,15 @@
 <footer class="wf">
   <div class="tc mt3 f6">
-    this site is open source and
-    <a
-      style="text-decoration: underline"
-      href="https://github.com/bliotti/coinguy-website"
-    >
-      lives here</a
-    >
-    <br />
-
-    {{ get_env(name="env") | truncate(length=7) }} {% if get_env(name="env",
-    default="dev") == "prod" %} {% set git_sha = get_env(name="GIT_SHA") %} {{
-    git_sha | truncate(length=7) }} {% endif %}
-    <br />
     last updated {{ now() | date(format="%e %B %Y") }}
+    <br />
+    code for this site
+    <a style="text-decoration: underline" href="https://github.com/bliotti/coinguy-website">
+      {% if get_env(name="env", default="dev") == "prod" %}
+      {% set git_sha = get_env(name="GIT_SHA") %} {{ git_sha | truncate(length=7) }}
+      {% endif %}
+      {% if get_env(name="env", default="dev") == "dev" %}
+      {% set git_sha = get_env(name="GIT_SHA") %} {{ git_sha | truncate(length=7) }}
+      {% endif %}
+    </a>
   </div>
 </footer>
