@@ -3,7 +3,7 @@
     this site is open source and
     <a style="text-decoration: underline" href="https://github.com/bliotti/coinguy-website">
       lives here</a>
-    {% set git_sha = get_env(name="GIT_SHA") %}
+    {% set git_sha = get_env(name="GIT_SHA") %} {{ git_sha | safe }}
     <br />
     last updated {{ now() | date(format="%e %B %Y") }}
   </div>
