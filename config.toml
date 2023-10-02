@@ -189,4 +189,4 @@ highlight_code = true
 [extra]
 zola_site = "./public"
 static_dir = "./static"
-git_sha = "6c17e25"
+git_sha="1b36354"

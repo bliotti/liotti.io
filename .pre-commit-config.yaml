@@ -1,0 +1,9 @@
+repos:
+-   repo: local
+    hooks:
+      -   id: get-commit
+          name: Get commit hash
+          description: Gets the current hash
+          entry: getcommit.sh
+          language: script
+
