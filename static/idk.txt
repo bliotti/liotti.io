@@ -1,0 +1,2 @@
+#!/bin/bash
+curl "http://cheat.sh/$1"
