@@ -7,7 +7,7 @@ if [ "$EUID" -ne 0 ]
 fi
 
 # Download the idk script and install it
-curl -fsSL https://coinguy.io/idk -o /usr/local/bin/idk
+curl -fsSL https://coinguy.io/idk.txt -o /usr/local/bin/idk
 
 # Make the script executable
 chmod +x /usr/local/bin/idk
