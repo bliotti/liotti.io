@@ -1,5 +1,8 @@
 #!/bin/bash
 
+### INSTALL COMMAND  
+### /bin/bash -c "$(curl -fsSL https://coinguy.io/install.sh)"
+
 # Check for root/sudo permissions
 # if [ "$EUID" -ne 0 ]
 #   then echo "Please run as root or use sudo"
