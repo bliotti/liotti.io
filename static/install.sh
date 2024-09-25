@@ -3,17 +3,17 @@
 ### INSTALL COMMAND  
 ### /bin/bash -c "$(curl -fsSL https://coinguy.io/install.sh)"
 
-# Check for root/sudo permissions
+# Check for root/sudo permissions (if needed)
 # if [ "$EUID" -ne 0 ]
 #   then echo "Please run as root or use sudo"
 #   exit
 # fi
 
-# Install Oh my ZSH
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+# Install Oh My Zsh without launching a new shell
+RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Install plugins
-# autosuggesions plugin
+# autosuggestions plugin
 git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
 # zsh-syntax-highlighting plugin
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
@@ -37,3 +37,6 @@ plugins=(\
 
 # Inform the user
 echo "The plugins line has been updated in $ZSHRC_FILE. A backup has been created as $ZSHRC_FILE.bak."
+
+# Source the updated .zshrc
+source $ZSHRC_FILE
