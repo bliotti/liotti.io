@@ -3,13 +3,14 @@
     last updated {{ now() | date(format="%e %B %Y") }}
     <br />
     code for this site
-    <a style="text-decoration: underline" href="https://github.com/bliotti/coinguy-website">
-      {% if get_env(name="env", default="dev") == "prod" %}
-      {% set git_sha = get_env(name="GIT_SHA") %} {{ git_sha | truncate(length=7) }}
-      {% endif %}
-      {% if get_env(name="env", default="dev") == "dev" %}
-      {% set git_sha = get_env(name="GIT_SHA") %} {{ git_sha | truncate(length=7) }}
-      {% endif %}
+    <a
+      style="text-decoration: underline"
+      href="https://github.com/bliotti/coinguy-website"
+    >
+      {% if get_env(name="env", default="dev") == "prod" %} {% set git_sha =
+      get_env(name="GIT_SHA") %} {{ git_sha | truncate(length=7) }} {% endif %}
+      {% if get_env(name="env", default="dev") == "dev" %} {% set git_sha =
+      get_env(name="GIT_SHA") %} {{ git_sha | truncate(length=7) }} {% endif %}
     </a>
   </div>
 </footer>
