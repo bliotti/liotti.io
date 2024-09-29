@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -v
 ### INSTALL COMMAND
 ### /bin/bash -c "$(curl -fsSL https://coinguy.io/install.sh)"
 
@@ -86,5 +87,12 @@ plugins=(\
 # Inform the user
 echo "The plugins line has been updated in $ZSHRC_FILE. A backup has been created as $ZSHRC_FILE.bak."
 
-# Source the updated .zshrc
-source $ZSHRC_FILE
+# Automatically change default shell to Zsh without prompting
+if [ "$SHELL" != "$(which zsh)" ]; then
+  echo "Changing your default shell to Zsh..."
+  chsh -s "$(which zsh)" "$USER"
+  echo "Default shell changed to Zsh. Please restart your terminal or log out and log back in."
+fi
+
+# Prompt the user to switch to Zsh manually
+echo "Installation complete! Please run 'zsh' to switch to Zsh and load your updated configuration."
