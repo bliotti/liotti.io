@@ -29,6 +29,32 @@ fi
 
 echo "Zsh is installed."
 
+# Check for Git installation, install if not present
+if ! command -v git &>/dev/null; then
+  echo "Git is not installed. Installing Git..."
+  if [ "$(uname)" == "Darwin" ]; then
+    # macOS installation
+    brew install git
+  elif [ -f /etc/debian_version ]; then
+    # Debian/Ubuntu installation
+    sudo apt update && sudo apt install -y git
+  elif [ -f /etc/redhat-release ]; then
+    # RHEL/Fedora/CentOS installation
+    sudo yum install -y git
+  else
+    echo "Unsupported OS. Please install Git manually."
+    exit 1
+  fi
+fi
+
+# Verify Git was installed correctly
+if ! command -v git &>/dev/null; then
+  echo "Failed to install Git. Please install it manually."
+  exit 1
+fi
+
+echo "Git is installed."
+
 # Install Oh My Zsh without launching a new shell
 RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
