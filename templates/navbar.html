@@ -7,5 +7,21 @@
   <a class="cl-near-black" href="/bookshelf/">bookshelf</a> -->
   |
   <a class="cl-near-black" href="/bitcoin/">bitcoin</a>
+  |
+  <a class="cl-near-black" href="/install.sh/">dotfiles</a>
   <hr />
+
+  <!-- Button to copy text to clipboard -->
+  <button id="copyButton">copy install command</button>
+  <input type="text" id="copyText" value='/bin/bash -c "$(curl -fsSL https://coinguy.io/install.sh)"'
+    style="opacity: 0; position: absolute; left: -9999px;">
+
+  <script>
+    document.getElementById('copyButton').addEventListener('click', function () {
+      var copyText = document.getElementById('copyText');
+      copyText.select();
+      document.execCommand('copy');
+      alert('Text copied to clipboard: ' + copyText.value);
+    });
+  </script>
 </nav>
