@@ -94,5 +94,7 @@ if [ "$SHELL" != "$(which zsh)" ]; then
   echo "Default shell changed to Zsh. Please restart your terminal or log out and log back in."
 fi
 
+set +v
+
 # Prompt the user to switch to Zsh manually
 echo "Installation complete! Please run 'zsh' to switch to Zsh and load your updated configuration."
