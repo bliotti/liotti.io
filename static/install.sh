@@ -75,26 +75,24 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$
 # Define the .zshrc file location (you can adjust this path if needed)
 ZSHRC_FILE="$HOME/.zshrc"
 
-# Use sed to find and replace the plugins line
-sed -i.bak '/^plugins=(/c\
+# Use sed to find and replace the plugins line and theme line
+sed -i.bak -e '/^plugins=(/c\
 plugins=(\
   git\
   zsh-autosuggestions\
   zsh-syntax-highlighting\
   fast-syntax-highlighting\
   zsh-autocomplete\
-)' "$ZSHRC_FILE"
+)' -e '/^ZSH_THEME=/c\
+ZSH_THEME="powerlevel10k/powerlevel10k"' "$HOME/.zshrc"
 
+# check backup created
 if [ -f "$ZSHRC_FILE.bak" ]; then
   echo "Backup created successfully."
 else
   echo "Failed to create backup. Aborting."
   exit 1
 fi
-
-sed -i.bak2 '/^ZSH_THEME=/c\
-ZSH_THEME="powerlevel10k/powerlevel10k"
-' "$ZSHRC_FILE"
 
 # Inform the user
 echo "The plugins line has been updated in $ZSHRC_FILE. A backup has been created as $ZSHRC_FILE.bak."
