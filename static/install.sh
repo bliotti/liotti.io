@@ -70,12 +70,13 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/p
 git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
 # zsh-autocomplete plugin
 git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
-
+# powerlevel10k
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 # Define the .zshrc file location (you can adjust this path if needed)
 ZSHRC_FILE="$HOME/.zshrc"
 
 # Use sed to find and replace the plugins line
-sed -i.bak '/^plugins=(git)/c\
+sed -i.bak '/^plugins=(/c\
 plugins=(\
   git\
   zsh-autosuggestions\
@@ -83,6 +84,17 @@ plugins=(\
   fast-syntax-highlighting\
   zsh-autocomplete\
 )' "$ZSHRC_FILE"
+
+if [ -f "$ZSHRC_FILE.bak" ]; then
+  echo "Backup created successfully."
+else
+  echo "Failed to create backup. Aborting."
+  exit 1
+fi
+
+sed -i.bak2 '/^ZSH_THEME=/c\
+ZSH_THEME="powerlevel10k/powerlevel10k"
+' "$ZSHRC_FILE"
 
 # Inform the user
 echo "The plugins line has been updated in $ZSHRC_FILE. A backup has been created as $ZSHRC_FILE.bak."
