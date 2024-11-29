@@ -72,6 +72,11 @@ git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZS
 git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
 # powerlevel10k
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+# zsh-history-substring-search 
+git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-history-substring-search  
+# k
+git clone https://github.com/supercrabtree/k $ZSH_CUSTOM/plugins/k
+
 # Define the .zshrc file location (you can adjust this path if needed)
 ZSHRC_FILE="$HOME/.zshrc"
 
@@ -79,6 +84,8 @@ ZSHRC_FILE="$HOME/.zshrc"
 sed -i.bak -e '/^plugins=(/c\
 plugins=(\
   git\
+  zsh-history-substring-search\
+  k\
   zsh-autosuggestions\
   zsh-syntax-highlighting\
   fast-syntax-highlighting\
