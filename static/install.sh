@@ -82,7 +82,6 @@ git clone https://github.com/supercrabtree/k $ZSH_CUSTOM/plugins/k
 # Theme
 git clone https://github.com/ChesterYue/ohmyzsh-theme-passion
 cp ./ohmyzsh-theme-passion/passion.zsh-theme ~/.oh-my-zsh/themes/passion.zsh-theme
-omz theme set passion
 
 # Define the .zshrc file location (you can adjust this path if needed)
 ZSHRC_FILE="$HOME/.zshrc"
@@ -91,14 +90,12 @@ ZSHRC_FILE="$HOME/.zshrc"
 sed -i.bak -e '/^plugins=(/c\
 plugins=(\
   git\
-  # zsh-history-substring-search\
   k\
   zsh-autosuggestions\
   zsh-syntax-highlighting\
   fast-syntax-highlighting\
-  # zsh-autocomplete\
 )' -e '/^ZSH_THEME=/c\
-
+ZSH_THEME="passion"' "$HOME/.zshrc"
 # ZSH_THEME="powerlevel10k/powerlevel10k"' "$HOME/.zshrc"
 
 # Inform the user
