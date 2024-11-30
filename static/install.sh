@@ -68,14 +68,21 @@ git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugi
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 # zsh-fast-syntax-highlighting plugin
 git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
-# zsh-autocomplete plugin
-git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
-# powerlevel10k
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-# zsh-history-substring-search 
-git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-history-substring-search  
+## zsh-autocomplete plugin
+# git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
 # k
 git clone https://github.com/supercrabtree/k $ZSH_CUSTOM/plugins/k
+
+## Optional plugins
+## powerlevel10k
+# git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+## zsh-history-substring-search 
+# git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-history-substring-search  
+
+# Theme
+git clone https://github.com/ChesterYue/ohmyzsh-theme-passion
+cp ./ohmyzsh-theme-passion/passion.zsh-theme ~/.oh-my-zsh/themes/passion.zsh-theme
+omz theme set passion
 
 # Define the .zshrc file location (you can adjust this path if needed)
 ZSHRC_FILE="$HOME/.zshrc"
@@ -84,22 +91,15 @@ ZSHRC_FILE="$HOME/.zshrc"
 sed -i.bak -e '/^plugins=(/c\
 plugins=(\
   git\
-  zsh-history-substring-search\
+  # zsh-history-substring-search\
   k\
   zsh-autosuggestions\
   zsh-syntax-highlighting\
   fast-syntax-highlighting\
-  zsh-autocomplete\
+  # zsh-autocomplete\
 )' -e '/^ZSH_THEME=/c\
-ZSH_THEME="powerlevel10k/powerlevel10k"' "$HOME/.zshrc"
 
-# check backup created
-if [ -f "$ZSHRC_FILE.bak" ]; then
-  echo "Backup created successfully."
-else
-  echo "Failed to create backup. Aborting."
-  exit 1
-fi
+# ZSH_THEME="powerlevel10k/powerlevel10k"' "$HOME/.zshrc"
 
 # Inform the user
 echo "The plugins line has been updated in $ZSHRC_FILE. A backup has been created as $ZSHRC_FILE.bak."
