@@ -105,6 +105,7 @@ plugins=(\
 )' -e '/^ZSH_THEME=/c\
 ZSH_THEME="passion"' -e "fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src" "$HOME/.zshrc"
 
+
 # Inform the user
 echo "The plugins line has been updated in $ZSHRC_FILE. A backup has been created as $ZSHRC_FILE.bak."
 
