@@ -61,19 +61,27 @@ RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/
 
 ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
 
-# Install plugins
-# autosuggestions plugin
+# INSTALL PLUGINS
+# zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
-# zsh-syntax-highlighting plugin
+
+# zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-# zsh-fast-syntax-highlighting plugin
+
+# zsh-fast-syntax-highlighting
 git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
-## zsh-autocomplete plugin
+
+# zsh-completions
+git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+
+## zsh-autocomplete
 # git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
-# k
+
+
+# K
 git clone https://github.com/supercrabtree/k $ZSH_CUSTOM/plugins/k
 
-## Optional plugins
+## OPTIONAL PLUGINS
 ## powerlevel10k
 # git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 ## zsh-history-substring-search 
@@ -95,7 +103,9 @@ plugins=(\
   zsh-syntax-highlighting\
   fast-syntax-highlighting\
 )' -e '/^ZSH_THEME=/c\
-ZSH_THEME="passion"' "$HOME/.zshrc"
+ZSH_THEME="passion"' "$HOME/.zshrc"\
+-e "fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src"
+
 # ZSH_THEME="powerlevel10k/powerlevel10k"' "$HOME/.zshrc"
 
 # Inform the user
