@@ -103,7 +103,7 @@ plugins=(\
   zsh-syntax-highlighting\
   fast-syntax-highlighting\
 )' -e '/^ZSH_THEME=/c\
-ZSH_THEME="passion"' -e "fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src" "$HOME/.zshrc"
+ZSH_THEME="passion"' -e "s|fpath+=\${ZSH_CUSTOM:-\${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src|fpath+=\${ZSH_CUSTOM:-\${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src|" "$HOME/.zshrc"
 
 
 # Inform the user
