@@ -9,7 +9,7 @@ if ! command -v zsh &>/dev/null; then
   echo "Zsh is not installed. Installing Zsh..."
   if [ "$(uname)" == "Darwin" ]; then
     # macOS installation
-    brew install zsh
+    sudo apt install zsh
   elif [ -f /etc/debian_version ]; then
     # Debian/Ubuntu installation
     sudo apt update && sudo apt install -y zsh
@@ -57,44 +57,66 @@ fi
 echo "Git is installed."
 
 # Install Oh My Zsh without launching a new shell
-RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+else
+  echo "Oh My Zsh is already installed."
+fi
 
 ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
 
 # INSTALL PLUGINS
+
 # zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
+  git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
+else
+  echo "zsh-autosuggestions is already installed."
+fi
 
 # zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+else
+  echo "zsh-syntax-highlighting is already installed."
+fi
 
 # zsh-fast-syntax-highlighting
-git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
+if [ ! -d "$ZSH_CUSTOM/plugins/fast-syntax-highlighting" ]; then
+  git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
+else
+  echo "fast-syntax-highlighting is already installed."
+fi
 
 # zsh-completions
-git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
-
-## zsh-autocomplete
-# git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
-
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-completions" ]; then
+  git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+else
+  echo "zsh-completions is already installed."
+fi
 
 # K
-git clone https://github.com/supercrabtree/k $ZSH_CUSTOM/plugins/k
-
-## OPTIONAL PLUGINS
-## powerlevel10k
-# git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-## zsh-history-substring-search 
-# git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-history-substring-search  
+if [ ! -d "$ZSH_CUSTOM/plugins/k" ]; then
+  git clone https://github.com/supercrabtree/k $ZSH_CUSTOM/plugins/k
+else
+  echo "k is already installed."
+fi
 
 # Theme
-git clone https://github.com/ChesterYue/ohmyzsh-theme-passion
-cp ./ohmyzsh-theme-passion/passion.zsh-theme ~/.oh-my-zsh/themes/passion.zsh-theme
+if [ ! -d "$HOME/.oh-my-zsh/themes/passion.zsh-theme" ]; then
+  git clone https://github.com/ChesterYue/ohmyzsh-theme-passion
+  cp ./ohmyzsh-theme-passion/passion.zsh-theme ~/.oh-my-zsh/themes/passion.zsh-theme
+else
+  echo "Theme passion is already installed."
+fi
+
 # Define the .zshrc file location (you can adjust this path if needed)
 ZSHRC_FILE="$HOME/.zshrc"
 
-# Create a backup of the .zshrc file
-cp "$ZSHRC_FILE" "$ZSHRC_FILE.bak"
+# Create a backup of the .zshrc file if it doesn't already exist
+if [ ! -f "$ZSHRC_FILE.bak" ]; then
+  cp "$ZSHRC_FILE" "$ZSHRC_FILE.bak"
+fi
 
 # Update the plugins line
 sed -i -e '/^plugins=(/c\
@@ -109,10 +131,12 @@ plugins=(\
 # Update the ZSH_THEME line
 sed -i -e '/^ZSH_THEME=/c\ZSH_THEME="passion"' "$ZSHRC_FILE"
 
-# Append the fpath part right before "source $ZSH/oh-my-zsh.sh"
-sed -i -e '/^source \$ZSH\/oh-my-zsh.sh/i\
+# Append the fpath part right before "source $ZSH/oh-my-zsh.sh" if it does not already exist
+if ! grep -q 'fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src' "$ZSHRC_FILE"; then
+  sed -i -e '/^source \$ZSH\/oh-my-zsh.sh/i\
 fpath+=\${ZSH_CUSTOM:-\${ZSH:-~\/.oh-my-zsh}\/custom}\/plugins\/zsh-completions\/src\
 ' "$ZSHRC_FILE"
+fi
 
 # Inform the user
 echo "The plugins line has been updated in $ZSHRC_FILE. A backup has been created as $ZSHRC_FILE.bak."
