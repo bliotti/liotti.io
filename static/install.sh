@@ -90,26 +90,29 @@ git clone https://github.com/supercrabtree/k $ZSH_CUSTOM/plugins/k
 # Theme
 git clone https://github.com/ChesterYue/ohmyzsh-theme-passion
 cp ./ohmyzsh-theme-passion/passion.zsh-theme ~/.oh-my-zsh/themes/passion.zsh-theme
-
 # Define the .zshrc file location (you can adjust this path if needed)
 ZSHRC_FILE="$HOME/.zshrc"
 
-# Use sed to find and replace the plugins line and theme line
-sed -i.bak -e '/^plugins=(/c\
+# Create a backup of the .zshrc file
+cp "$ZSHRC_FILE" "$ZSHRC_FILE.bak"
+
+# Update the plugins line
+sed -i -e '/^plugins=(/c\
 plugins=(\
   git\
   k\
   zsh-autosuggestions\
   zsh-syntax-highlighting\
   fast-syntax-highlighting\
-)' -e '/^ZSH_THEME=/c\
-ZSH_THEME="passion"' -e "s|fpath+=\${ZSH_CUSTOM:-\${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src|fpath+=\${ZSH_CUSTOM:-\${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src|" "$HOME/.zshrc"
+)' "$ZSHRC_FILE"
 
+# Update the ZSH_THEME line
+sed -i -e '/^ZSH_THEME=/c\ZSH_THEME="passion"' "$ZSHRC_FILE"
 
-# Inform the user
-echo "The plugins line has been updated in $ZSHRC_FILE. A backup has been created as $ZSHRC_FILE.bak."
-
-# ZSH_THEME="powerlevel10k/powerlevel10k"' "$HOME/.zshrc"
+# Append the fpath part right before "source $ZSH/oh-my-zsh.sh"
+sed -i -e '/^source \$ZSH\/oh-my-zsh.sh/i\
+fpath+=\${ZSH_CUSTOM:-\${ZSH:-~\/.oh-my-zsh}\/custom}\/plugins\/zsh-completions\/src\
+' "$ZSHRC_FILE"
 
 # Inform the user
 echo "The plugins line has been updated in $ZSHRC_FILE. A backup has been created as $ZSHRC_FILE.bak."
