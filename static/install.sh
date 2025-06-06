@@ -2,7 +2,7 @@
 
 set -v
 ### INSTALL COMMAND
-### /bin/bash -c "$(curl -fsSL https://coinguy.io/install.sh)"
+### /bin/bash -c "$(curl -fsSL https://liotti.io/install.sh)"
 
 # Check for Zsh installation, install if not present
 if ! command -v zsh &>/dev/null; then
