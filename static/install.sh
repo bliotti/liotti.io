@@ -138,7 +138,9 @@ fpath+=\${ZSH_CUSTOM:-\${ZSH:-~\/.oh-my-zsh}\/custom}\/plugins\/zsh-completions\
 ' "$ZSHRC_FILE"
 fi
 
+# disk aliases
 sed -i '/alias dirdisk=/d' ~/.zshrc && echo "alias dirdisk='df -h | awk '\''NR==1 {print; next} {print | \"sort -k4 -h -r\"}'\''" >> ~/.zshrc
+sed -i '/^alias dusort=/d' ~/.zshrc && echo "alias dusort='du -sh * | sort -rh'" >> ~/.zshrc
 
 # Inform the user
 echo "The plugins line has been updated in $ZSHRC_FILE. A backup has been created as $ZSHRC_FILE.bak."
