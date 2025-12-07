@@ -109,6 +109,7 @@ sedi() {
 install_pkg zsh
 install_pkg git
 install_pkg bc
+install_pkg build-essential
 
 ########################################
 # 2. Oh My Zsh
