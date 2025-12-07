@@ -169,6 +169,7 @@ install_pkg bc
 if [ "$OS" = "Linux" ] && [ -f /etc/debian_version ]; then
   install_pkg build-essential
   install_pkg ripgrep
+  install_pkg wget
 fi
 
 install_nvim
