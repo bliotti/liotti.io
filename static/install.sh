@@ -64,6 +64,18 @@ have_cmd() {
   command -v "$1" >/dev/null 2>&1
 }
 
+# Debian-only helper so apt update runs once per script
+debian_apt_install() {
+  local pkg="$1"
+
+  if [ "$APT_UPDATED" -eq 0 ]; then
+    sudo apt update
+    APT_UPDATED=1
+  fi
+
+  sudo apt install -y "$pkg"
+}
+
 install_pkg() {
   local pkg="$1"
 
@@ -83,11 +95,7 @@ install_pkg() {
       ;;
     Linux)
       if [ -f /etc/debian_version ]; then
-        if [ "$APT_UPDATED" -eq 0 ]; then
-          sudo apt update
-          APT_UPDATED=1
-        fi
-        sudo apt install -y "$pkg"
+        debian_apt_install "$pkg"
       elif [ -f /etc/redhat-release ]; then
         sudo yum install -y "$pkg"
       else
@@ -114,7 +122,7 @@ sedi() {
 ########################################
 # Neovim installer helper
 ########################################
-install_nvim() {  # ### ADDED: Neovim
+install_nvim() {
   if have_cmd nvim; then
     echo "Neovim already installed (nvim found)."
     return 0
@@ -132,8 +140,8 @@ install_nvim() {  # ### ADDED: Neovim
       ;;
     Linux)
       if [ -f /etc/debian_version ]; then
-        sudo apt update
-        sudo apt install -y neovim
+        # use the same apt-update guard as other Debian installs
+        debian_apt_install neovim
       elif [ -f /etc/redhat-release ]; then
         sudo yum install -y neovim
       else
@@ -156,8 +164,13 @@ install_pkg curl
 install_pkg zsh
 install_pkg git
 install_pkg bc
-install_pkg build-essential
-install_nvim   # ### ADDED: Neovim
+
+# build-essential is a Debian-only package name
+if [ "$OS" = "Linux" ] && [ -f /etc/debian_version ]; then
+  install_pkg build-essential
+fi
+
+install_nvim
 
 ########################################
 # 2. Oh My Zsh
@@ -267,10 +280,10 @@ fi
 # 10. Neovim config from bliotti/nvim
 ########################################
 
-NVIM_REPO="${NVIM_REPO:-https://github.com/bliotti/nvim}"   # ### ADDED
-NVIM_CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}"        # ### ADDED
-NVIM_CONFIG_DIR="$NVIM_CONFIG_ROOT/nvim"                    # ### ADDED
-NVIM_CONFIG_BAK="$NVIM_CONFIG_DIR.bak"                      # ### ADDED
+NVIM_REPO="${NVIM_REPO:-https://github.com/bliotti/nvim}"
+NVIM_CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}"
+NVIM_CONFIG_DIR="$NVIM_CONFIG_ROOT/nvim"
+NVIM_CONFIG_BAK="$NVIM_CONFIG_DIR.bak"
 
 mkdir -p "$NVIM_CONFIG_ROOT"
 
