@@ -1,158 +1,218 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
+# liotti.io zsh / oh-my-zsh bootstrap installer
+# Safe by default, idempotent, cross-platform (macOS + Linux)
 
+########################################
+# Interactive confirmation (AUTO_YES=1 ok)
+########################################
+
+if [ "${AUTO_YES:-}" != "1" ]; then
+  cat <<'EOF'
+This installer will:
+
+  • Install system packages (zsh, git, bc)
+  • Install Oh My Zsh into ~/.oh-my-zsh
+  • Install and enable Zsh plugins:
+      - zsh-autosuggestions
+      - zsh-syntax-highlighting
+      - fast-syntax-highlighting
+      - zsh-completions
+      - k
+  • Install and enable the "passion" Oh My Zsh theme
+  • Back up ~/.zshrc to ~/.zshrc.bak (once)
+  • Modify ~/.zshrc:
+      - set ZSH_THEME
+      - set plugin list
+      - add zsh-completions fpath
+      - add disk aliases (dirdisk, dusort)
+  • Attempt to change your default shell to zsh (best effort)
+
+No files outside your home directory are modified except via
+your system package manager.
+
+EOF
+
+  read -r -p "Type 'yes' to continue, anything else to abort: " CONFIRM
+  if [ "$CONFIRM" != "yes" ]; then
+    echo "Installation aborted."
+    exit 0
+  fi
+fi
+
+echo "Proceeding with installation..."
+
+########################################
+# Strict mode + trace
+########################################
+set -euo pipefail
 set -v
-### INSTALL COMMAND
-### /bin/bash -c "$(curl -fsSL https://liotti.io/install.sh)"
 
-# Check for Zsh installation, install if not present
-if ! command -v zsh &>/dev/null; then
-  echo "Zsh is not installed. Installing Zsh..."
-  if [ "$(uname)" == "Darwin" ]; then
-    # macOS installation
-    sudo apt install zsh
-  elif [ -f /etc/debian_version ]; then
-    # Debian/Ubuntu installation
-    sudo apt update && sudo apt install -y zsh
-  elif [ -f /etc/redhat-release ]; then
-    # RHEL/Fedora/CentOS installation
-    sudo yum install -y zsh
-  else
-    echo "Unsupported OS. Please install Zsh manually."
-    exit 1
+########################################
+# Helpers
+########################################
+
+OS="$(uname -s)"
+
+have_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+install_pkg() {
+  local pkg="$1"
+
+  if have_cmd "$pkg"; then
+    return 0
   fi
-fi
 
-# Verify Zsh was installed correctly
-if ! command -v zsh &>/dev/null; then
-  echo "Failed to install Zsh. Please install it manually."
-  exit 1
-fi
+  echo "Installing ${pkg}..."
 
-echo "Zsh is installed."
+  case "$OS" in
+    Darwin)
+      if ! have_cmd brew; then
+        echo "Homebrew not found. Install from https://brew.sh and rerun."
+        exit 1
+      fi
+      brew install "$pkg"
+      ;;
+    Linux)
+      if [ -f /etc/debian_version ]; then
+        sudo apt update
+        sudo apt install -y "$pkg"
+      elif [ -f /etc/redhat-release ]; then
+        sudo yum install -y "$pkg"
+      else
+        echo "Unsupported Linux distro. Install ${pkg} manually."
+        exit 1
+      fi
+      ;;
+    *)
+      echo "Unsupported OS: ${OS}. Install ${pkg} manually."
+      exit 1
+      ;;
+  esac
+}
 
-# Check for Git installation, install if not present
-if ! command -v git &>/dev/null; then
-  echo "Git is not installed. Installing Git..."
-  if [ "$(uname)" == "Darwin" ]; then
-    # macOS installation
-    brew install git
-  elif [ -f /etc/debian_version ]; then
-    # Debian/Ubuntu installation
-    sudo apt update && sudo apt install -y git
-  elif [ -f /etc/redhat-release ]; then
-    # RHEL/Fedora/CentOS installation
-    sudo yum install -y git
+# portable sed -i
+sedi() {
+  if sed --version >/dev/null 2>&1; then
+    sed -i "$@"
   else
-    echo "Unsupported OS. Please install Git manually."
-    exit 1
+    sed -i '' "$@"
   fi
-fi
+}
 
-# Verify Git was installed correctly
-if ! command -v git &>/dev/null; then
-  echo "Failed to install Git. Please install it manually."
-  exit 1
-fi
+########################################
+# 1. Core tools
+########################################
 
-echo "Git is installed."
+install_pkg zsh
+install_pkg git
+install_pkg bc
 
-# Install Oh My Zsh without launching a new shell
+########################################
+# 2. Oh My Zsh
+########################################
+
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 else
-  echo "Oh My Zsh is already installed."
+  echo "Oh My Zsh already installed."
 fi
 
-ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
-
-# INSTALL PLUGINS
-
-# zsh-autosuggestions
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
-  git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
-else
-  echo "zsh-autosuggestions is already installed."
-fi
-
-# zsh-syntax-highlighting
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-else
-  echo "zsh-syntax-highlighting is already installed."
-fi
-
-# zsh-fast-syntax-highlighting
-if [ ! -d "$ZSH_CUSTOM/plugins/fast-syntax-highlighting" ]; then
-  git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
-else
-  echo "fast-syntax-highlighting is already installed."
-fi
-
-# zsh-completions
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-completions" ]; then
-  git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
-else
-  echo "zsh-completions is already installed."
-fi
-
-# K
-if [ ! -d "$ZSH_CUSTOM/plugins/k" ]; then
-  git clone https://github.com/supercrabtree/k $ZSH_CUSTOM/plugins/k
-else
-  echo "k is already installed."
-fi
-
-# Theme
-if [ ! -d "$HOME/.oh-my-zsh/themes/passion.zsh-theme" ]; then
-  git clone https://github.com/ChesterYue/ohmyzsh-theme-passion
-  cp ./ohmyzsh-theme-passion/passion.zsh-theme ~/.oh-my-zsh/themes/passion.zsh-theme
-else
-  echo "Theme passion is already installed."
-fi
-
-# Define the .zshrc file location (you can adjust this path if needed)
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 ZSHRC_FILE="$HOME/.zshrc"
 
-# Create a backup of the .zshrc file if it doesn't already exist
+# Ensure .zshrc exists
+if [ ! -f "$ZSHRC_FILE" ]; then
+  cat >"$ZSHRC_FILE" <<'EOF'
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="robbyrussell"
+plugins=(git)
+source "$ZSH/oh-my-zsh.sh"
+EOF
+fi
+
+########################################
+# 3. Backup .zshrc
+########################################
+
 if [ ! -f "$ZSHRC_FILE.bak" ]; then
   cp "$ZSHRC_FILE" "$ZSHRC_FILE.bak"
 fi
 
-# Update the plugins line
-sed -i -e '/^plugins=(/c\
-plugins=(\
-  git\
-  k\
-  zsh-autosuggestions\
-  zsh-syntax-highlighting\
-  fast-syntax-highlighting\
-)' "$ZSHRC_FILE"
+########################################
+# 4. Plugins
+########################################
 
-# Update the ZSH_THEME line
-sed -i -e '/^ZSH_THEME=/c\ZSH_THEME="passion"' "$ZSHRC_FILE"
+clone_plugin() {
+  local name="$1"
+  local repo="$2"
 
-# Append the fpath part right before "source $ZSH/oh-my-zsh.sh" if it does not already exist
-if ! grep -q 'fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src' "$ZSHRC_FILE"; then
-  sed -i -e '/^source \$ZSH\/oh-my-zsh.sh/i\
-fpath+=\${ZSH_CUSTOM:-\${ZSH:-~\/.oh-my-zsh}\/custom}\/plugins\/zsh-completions\/src\
+  if [ ! -d "$ZSH_CUSTOM/plugins/$name" ]; then
+    git clone "$repo" "$ZSH_CUSTOM/plugins/$name"
+  else
+    echo "$name already installed."
+  fi
+}
+
+clone_plugin zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions
+clone_plugin zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting
+clone_plugin fast-syntax-highlighting https://github.com/zdharma-continuum/fast-syntax-highlighting
+clone_plugin zsh-completions https://github.com/zsh-users/zsh-completions
+clone_plugin k https://github.com/supercrabtree/k
+
+########################################
+# 5. Passion theme
+########################################
+
+THEME_FILE="$HOME/.oh-my-zsh/themes/passion.zsh-theme"
+if [ ! -f "$THEME_FILE" ]; then
+  TMP_THEME="$(mktemp -d)"
+  git clone https://github.com/ChesterYue/ohmyzsh-theme-passion "$TMP_THEME"
+  cp "$TMP_THEME/passion.zsh-theme" "$THEME_FILE"
+  rm -rf "$TMP_THEME"
+else
+  echo "Passion theme already installed."
+fi
+
+########################################
+# 6. Update .zshrc
+########################################
+
+sedi 's/^ZSH_THEME=.*/ZSH_THEME="passion"/' "$ZSHRC_FILE"
+sedi 's/^plugins=.*/plugins=(git k zsh-autosuggestions zsh-syntax-highlighting fast-syntax-highlighting)/' "$ZSHRC_FILE"
+
+########################################
+# 7. zsh-completions fpath
+########################################
+
+if ! grep -q 'zsh-completions/src' "$ZSHRC_FILE"; then
+  sedi '/^source \$ZSH\/oh-my-zsh\.sh/i\
+fpath+=\${ZSH_CUSTOM:-\${ZSH:-~\/.oh-my-zsh}\/custom}\/plugins\/zsh-completions\/src
 ' "$ZSHRC_FILE"
 fi
 
-# disk aliases
-sed -i '/alias dirdisk=/d' ~/.zshrc && echo "alias dirdisk='df -h | awk '\''NR==1 {print; next} {print | \"sort -k4 -h -r\"}'\''" >> ~/.zshrc
-sed -i '/^alias dusort=/d' ~/.zshrc && echo "alias dusort='du -sh * | sort -rh'" >> ~/.zshrc
+########################################
+# 8. Disk aliases
+########################################
 
-# Inform the user
-echo "The plugins line has been updated in $ZSHRC_FILE. A backup has been created as $ZSHRC_FILE.bak."
+sedi '/^alias dirdisk=/d' "$ZSHRC_FILE"
+sedi '/^alias dusort=/d' "$ZSHRC_FILE"
 
-# Automatically change default shell to Zsh without prompting
-if [ "$SHELL" != "$(which zsh)" ]; then
-  echo "Changing your default shell to Zsh..."
-  chsh -s "$(which zsh)" "$USER"
-  echo "Default shell changed to Zsh. Please restart your terminal or log out and log back in."
+cat >>"$ZSHRC_FILE" <<'EOF'
+alias dirdisk='df -h | awk "NR==1 {print; next} {print | \"sort -k4 -h -r\"}"'
+alias dusort='du -sh * | sort -rh'
+EOF
+
+########################################
+# 9. Change default shell
+########################################
+
+ZSH_PATH="$(command -v zsh || true)"
+if [ -n "$ZSH_PATH" ] && [ "${SHELL:-}" != "$ZSH_PATH" ]; then
+  chsh -s "$ZSH_PATH" "$USER" || true
 fi
 
 set +v
-
-# Prompt the user to switch to Zsh manually
-echo "Installation complete! Please run 'zsh' to switch to Zsh and load your updated configuration."
+echo "Installation complete. Open a new terminal or run: zsh"
