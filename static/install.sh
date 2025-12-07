@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# liotti.io zsh / oh-my-zsh bootstrap installer
+# liotti.io zsh / oh-my-zsh + Neovim bootstrap installer
 # Safe by default, idempotent, cross-platform (macOS + Linux)
 
 ########################################
@@ -11,7 +11,8 @@ if [ "${AUTO_YES:-}" != "1" ]; then
   cat <<'EOF'
 This installer will:
 
-  • Install system packages (zsh, git, bc)
+  • Install system packages (curl, zsh, git, bc)
+  • Install Neovim
   • Install Oh My Zsh into ~/.oh-my-zsh
   • Install and enable Zsh plugins:
       - zsh-autosuggestions
@@ -20,6 +21,9 @@ This installer will:
       - zsh-completions
       - k
   • Install and enable the "passion" Oh My Zsh theme
+  • Configure Neovim from your repo:
+      - Clone or update bliotti/nvim into ~/.config/nvim
+      - Back up existing ~/.config/nvim to ~/.config/nvim.bak (once)
   • Back up ~/.zshrc to ~/.zshrc.bak (once)
   • Modify ~/.zshrc:
       - set ZSH_THEME
@@ -93,7 +97,7 @@ install_pkg() {
   esac
 }
 
-# portable sed -i
+# portable sed -i (GNU vs BSD)
 sedi() {
   if sed --version >/dev/null 2>&1; then
     sed -i "$@"
@@ -103,13 +107,52 @@ sedi() {
 }
 
 ########################################
-# 1. Core tools
+# Neovim installer helper
+########################################
+install_nvim() {  # ### ADDED: Neovim
+  if have_cmd nvim; then
+    echo "Neovim already installed (nvim found)."
+    return 0
+  fi
+
+  echo "Installing Neovim..."
+
+  case "$OS" in
+    Darwin)
+      if ! have_cmd brew; then
+        echo "Homebrew not found. Install from https://brew.sh and rerun."
+        exit 1
+      fi
+      brew install neovim
+      ;;
+    Linux)
+      if [ -f /etc/debian_version ]; then
+        sudo apt update
+        sudo apt install -y neovim
+      elif [ -f /etc/redhat-release ]; then
+        sudo yum install -y neovim
+      else
+        echo "Unsupported Linux distro. Install Neovim manually."
+        exit 1
+      fi
+      ;;
+    *)
+      echo "Unsupported OS: ${OS}. Install Neovim manually."
+      exit 1
+      ;;
+  esac
+}
+
+########################################
+# 1. Core tools (curl first)
 ########################################
 
+install_pkg curl
 install_pkg zsh
 install_pkg git
 install_pkg bc
 install_pkg build-essential
+install_nvim   # ### ADDED: Neovim
 
 ########################################
 # 2. Oh My Zsh
@@ -213,6 +256,54 @@ EOF
 ZSH_PATH="$(command -v zsh || true)"
 if [ -n "$ZSH_PATH" ] && [ "${SHELL:-}" != "$ZSH_PATH" ]; then
   chsh -s "$ZSH_PATH" "$USER" || true
+fi
+
+########################################
+# 10. Neovim config from bliotti/nvim
+########################################
+
+NVIM_REPO="${NVIM_REPO:-https://github.com/bliotti/nvim}"   # ### ADDED
+NVIM_CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}"        # ### ADDED
+NVIM_CONFIG_DIR="$NVIM_CONFIG_ROOT/nvim"                    # ### ADDED
+NVIM_CONFIG_BAK="$NVIM_CONFIG_DIR.bak"                      # ### ADDED
+
+mkdir -p "$NVIM_CONFIG_ROOT"
+
+if [ -d "$NVIM_CONFIG_DIR" ]; then
+  if [ -d "$NVIM_CONFIG_DIR/.git" ]; then
+    # If it's a git repo, check remote; if it's your repo, just pull.
+    remote_url="$(git -C "$NVIM_CONFIG_DIR" config --get remote.origin.url || true)"
+    if [ "$remote_url" = "$NVIM_REPO" ]; then
+      echo "Updating existing Neovim config in $NVIM_CONFIG_DIR..."
+      git -C "$NVIM_CONFIG_DIR" pull --ff-only || true
+    else
+      echo "Existing Neovim config found at $NVIM_CONFIG_DIR (remote: $remote_url)"
+      if [ ! -d "$NVIM_CONFIG_BAK" ]; then
+        echo "Backing up Neovim config to $NVIM_CONFIG_BAK"
+        mv "$NVIM_CONFIG_DIR" "$NVIM_CONFIG_BAK"
+      else
+        echo "Backup $NVIM_CONFIG_BAK already exists; leaving existing config in place."
+      fi
+      if [ ! -d "$NVIM_CONFIG_DIR" ]; then
+        echo "Cloning Neovim config from $NVIM_REPO"
+        git clone "$NVIM_REPO" "$NVIM_CONFIG_DIR"
+      fi
+    fi
+  else
+    # Non-git directory
+    echo "Existing non-git Neovim config directory at $NVIM_CONFIG_DIR"
+    if [ ! -d "$NVIM_CONFIG_BAK" ]; then
+      echo "Backing up Neovim config to $NVIM_CONFIG_BAK"
+      mv "$NVIM_CONFIG_DIR" "$NVIM_CONFIG_BAK"
+      echo "Cloning Neovim config from $NVIM_REPO"
+      git clone "$NVIM_REPO" "$NVIM_CONFIG_DIR"
+    else
+      echo "Backup $NVIM_CONFIG_BAK already exists; leaving existing config in place."
+    fi
+  fi
+else
+  echo "Cloning Neovim config from $NVIM_REPO into $NVIM_CONFIG_DIR"
+  git clone "$NVIM_REPO" "$NVIM_CONFIG_DIR"
 fi
 
 set +v
