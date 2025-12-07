@@ -168,6 +168,7 @@ install_pkg bc
 # build-essential is a Debian-only package name
 if [ "$OS" = "Linux" ] && [ -f /etc/debian_version ]; then
   install_pkg build-essential
+  install_pkg ripgrep
 fi
 
 install_nvim
