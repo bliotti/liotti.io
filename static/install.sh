@@ -52,6 +52,8 @@ echo "Proceeding with installation..."
 set -euo pipefail
 set -v
 
+APT_UPDATED=0
+
 ########################################
 # Helpers
 ########################################
@@ -81,7 +83,10 @@ install_pkg() {
       ;;
     Linux)
       if [ -f /etc/debian_version ]; then
-        sudo apt update
+        if [ "$APT_UPDATED" -eq 0 ]; then
+          sudo apt update
+          APT_UPDATED=1
+        fi
         sudo apt install -y "$pkg"
       elif [ -f /etc/redhat-release ]; then
         sudo yum install -y "$pkg"
