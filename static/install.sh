@@ -11,7 +11,7 @@ if [ "${AUTO_YES:-}" != "1" ]; then
   cat <<'EOF'
 This installer will:
 
-  • Install system packages (curl, zsh, git, bc)
+  • Install system packages (curl, zsh, git, bc, htop)
   • Install Neovim
   • Install Oh My Zsh into ~/.oh-my-zsh
   • Install and enable Zsh plugins:
