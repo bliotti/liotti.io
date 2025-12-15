@@ -164,6 +164,8 @@ install_pkg curl
 install_pkg zsh
 install_pkg git
 install_pkg bc
+install_pkg htop
+
 
 # build-essential is a Debian-only package name
 if [ "$OS" = "Linux" ] && [ -f /etc/debian_version ]; then
