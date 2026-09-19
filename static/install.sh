@@ -84,37 +84,48 @@ debian_apt_install() {
 cygwin_apt_install() {
   local pkg="$1"
 
+  if has_cygwin_home; then
+    echo "Cygwin HOME is set to: $HOME"
+  fi
+
   if have_cmd apt-cyg; then
+    echo "Using apt-cyg for $pkg"
     apt-cyg install "$pkg"
     return 0
   fi
 
   if have_cmd setup-x86_64; then
+    echo "Using setup-x86_64 for $pkg"
     setup-x86_64 -q -P "$pkg"
     return 0
   fi
 
   if have_cmd setup-x86_64.exe; then
+    echo "Using setup-x86_64.exe for $pkg"
     setup-x86_64.exe -q -P "$pkg"
     return 0
   fi
 
   if have_cmd setup.exe; then
+    echo "Using setup.exe for $pkg"
     setup.exe -q -P "$pkg"
     return 0
   fi
 
-  if have_cmd curl; then
-    local apt_cyg_bin="/usr/local/bin/apt-cyg"
-    mkdir -p "$(dirname "$apt_cyg_bin")"
-    curl -fsSL https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg -o "$apt_cyg_bin"
-    chmod +x "$apt_cyg_bin"
-    apt-cyg install "$pkg"
-    return 0
-  fi
-
-  echo "No supported Cygwin package manager was found. Install $pkg manually via the Cygwin setup.exe and rerun this script."
+  echo "Cygwin package manager not found. Please run the Cygwin setup installer and install: $pkg"
+  echo "Example: setup-x86_64.exe -q -P $pkg"
   exit 1
+}
+
+has_cygwin_home() {
+  case "$HOME" in
+    C:\*|C:/*)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
 }
 
 install_pkg() {
@@ -145,6 +156,10 @@ install_pkg() {
       fi
       ;;
     Cygwin)
+      if [ "$pkg" = "htop" ]; then
+        echo "Cygwin package 'htop' is not available; use 'procps-ng' or skip this package."
+        return 0
+      fi
       cygwin_apt_install "$pkg"
       ;;
     *)
@@ -212,7 +227,6 @@ install_pkg zsh
 install_pkg git
 install_pkg bc
 install_pkg htop
-
 
 # build-essential is a Debian-only package name
 if [ "$OS" = "Linux" ] && [ -f /etc/debian_version ]; then
