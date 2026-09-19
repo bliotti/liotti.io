@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # liotti.io zsh / oh-my-zsh + Neovim bootstrap installer
-# Safe by default, idempotent, cross-platform (macOS + Linux)
+# Safe by default, idempotent, cross-platform (macOS + Linux + Cygwin)
 
 ########################################
 # Interactive confirmation (AUTO_YES=1 ok)
@@ -59,6 +59,11 @@ APT_UPDATED=0
 ########################################
 
 OS="$(uname -s)"
+case "$OS" in
+  CYGWIN*|MINGW*|MSYS*)
+    OS="Cygwin"
+    ;;
+esac
 
 have_cmd() {
   command -v "$1" >/dev/null 2>&1
@@ -74,6 +79,42 @@ debian_apt_install() {
   fi
 
   sudo apt install -y "$pkg"
+}
+
+cygwin_apt_install() {
+  local pkg="$1"
+
+  if have_cmd apt-cyg; then
+    apt-cyg install "$pkg"
+    return 0
+  fi
+
+  if have_cmd setup-x86_64; then
+    setup-x86_64 -q -P "$pkg"
+    return 0
+  fi
+
+  if have_cmd setup-x86_64.exe; then
+    setup-x86_64.exe -q -P "$pkg"
+    return 0
+  fi
+
+  if have_cmd setup.exe; then
+    setup.exe -q -P "$pkg"
+    return 0
+  fi
+
+  if have_cmd curl; then
+    local apt_cyg_bin="/usr/local/bin/apt-cyg"
+    mkdir -p "$(dirname "$apt_cyg_bin")"
+    curl -fsSL https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg -o "$apt_cyg_bin"
+    chmod +x "$apt_cyg_bin"
+    apt-cyg install "$pkg"
+    return 0
+  fi
+
+  echo "No supported Cygwin package manager was found. Install $pkg manually via the Cygwin setup.exe and rerun this script."
+  exit 1
 }
 
 install_pkg() {
@@ -102,6 +143,9 @@ install_pkg() {
         echo "Unsupported Linux distro. Install ${pkg} manually."
         exit 1
       fi
+      ;;
+    Cygwin)
+      cygwin_apt_install "$pkg"
       ;;
     *)
       echo "Unsupported OS: ${OS}. Install ${pkg} manually."
@@ -149,6 +193,9 @@ install_nvim() {
         exit 1
       fi
       ;;
+    Cygwin)
+      cygwin_apt_install neovim
+      ;;
     *)
       echo "Unsupported OS: ${OS}. Install Neovim manually."
       exit 1
@@ -172,6 +219,9 @@ if [ "$OS" = "Linux" ] && [ -f /etc/debian_version ]; then
   install_pkg build-essential
   install_pkg ripgrep
   install_pkg wget
+elif [ "$OS" = "Cygwin" ]; then
+  install_pkg wget
+  install_pkg ripgrep
 fi
 
 install_nvim
@@ -255,7 +305,7 @@ sedi 's/^plugins=.*/plugins=(git k zsh-autosuggestions zsh-syntax-highlighting f
 
 if ! grep -q 'zsh-completions/src' "$ZSHRC_FILE"; then
   sedi '/^source \$ZSH\/oh-my-zsh\.sh/i\
-fpath+=\${ZSH_CUSTOM:-\${ZSH:-~\/.oh-my-zsh}\/custom}\/plugins\/zsh-completions\/src
+fpath+=\${ZSH_CUSTOM:-\${ZSH:-~\/\.oh-my-zsh}\/custom}\/plugins\/zsh-completions\/src
 ' "$ZSHRC_FILE"
 fi
 
@@ -276,7 +326,7 @@ EOF
 ########################################
 
 ZSH_PATH="$(command -v zsh || true)"
-if [ -n "$ZSH_PATH" ] && [ "${SHELL:-}" != "$ZSH_PATH" ]; then
+if [ -n "$ZSH_PATH" ] && [ "${SHELL:-}" != "$ZSH_PATH" ] && have_cmd chsh; then
   chsh -s "$ZSH_PATH" "$USER" || true
 fi
 
