@@ -1,0 +1,56 @@
+==================================================================
+https://keybase.io/coinguybri
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://coinguy.io
+  * I am coinguybri (https://keybase.io/coinguybri) on keybase.
+  * I have a public key ASAjeYwZAQyRjrXENERb0WDxN0C9Bh3FdgLejUd8T5s9Kgo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "01204b8a72dc68562534a51040896d63e65b5ceb3d0cc0103077ec877a8946ba6abc0a",
+      "host": "keybase.io",
+      "kid": "012023798c19010c918eb5c434445bd160f13740bd061dc57602de8d477c4f9b3d2a0a",
+      "uid": "54f2fde99d2186a7c8b77b5568e22419",
+      "username": "coinguybri"
+    },
+    "merkle_root": {
+      "ctime": 1701071247,
+      "hash": "75fc7c85f9c3a73668e6ccc1d86c4bce619cd3d4c224cd977b5f74dbf43353256a6ca04db10cc1ae6f52e057790769dd6f7ca740b343ca5b42cea009aca20522",
+      "hash_meta": "688f853e3e09d8cd63dc6d3168b9ba2584f7020f528275297d511a796ca55c5a",
+      "seqno": 25183005
+    },
+    "service": {
+      "entropy": "bnfERb3DRLI0aUKZkikQ9Jo5",
+      "hostname": "coinguy.io",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "6.2.4"
+  },
+  "ctime": 1701071257,
+  "expire_in": 504576000,
+  "prev": "ddbcfa8411d8026b3602eb245e687023c721e6e8dd568cede80f14bc6be5e8f5",
+  "seqno": 117,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgI3mMGQEMkY61xDREW9Fg8TdAvQYdxXYC3o1HfE+bPSoKp3BheWxvYWTESpcCdcQg3bz6hBHYAms2AuskXmhwI8ch5ujdVozt6A8UvGvl6PXEICIYV9oyznQljrs0gTelXX1GpLhdATTykhAKnZ7+8+t/AgHCo3NpZ8RAi9pKZSy3sptVGzayKMiLphgiw/lYmoSMxJHEaVI/X6Eepe7A4jXj1L/2/d3clxaEMfso+JAkLm+NCDefnFuVCqhzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEIGcDI/kl9l9dWqXSK4ioXwtBwcacXMGwKMUVXquLDKP4o3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/coinguybri
+
+==================================================================
